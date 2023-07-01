@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Star Trek</title>
+    <style> 
+        @font-face {
+            font-family: "kenvector_future_thin";
+            src: url("kenvector_future_thin.ttf");
+        }
+        *{
+            font-family: "kenvector_future_thin", serif;
+        }
+        body{
+            background-image: url("img/black.png");
+        }
+        #container {
+            width: 600px;
+            height: 700px;
+            position: relative;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            border: 5px solid white;
+        }
+        #mainPage,#gameOver,#about {
+            position: absolute;
+            color: white;
+            margin: 0 auto;
+            text-align: center;
+            width: 600px;
+            height: 700px;
+        }
+        #gameCanvas{
+            position: absolute;
+            color: white;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #btnArea {
+            text-align: center;
+            left: -5px;
+            width: 600px;
+            border: 5px solid white;
+            position: relative;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        #scorePad {
+            color:white;
+            margin: auto;
+            padding-left: 20px;
+            font-size:28px;
+            width: 175px;
+        }
+        #attackPad {
+            padding-left: 20px;
+            margin: auto;
+            width: 175px;
+        }
+        #controllPad {
+            padding-left: 20px;
+            margin: auto;
+            width: 175px;
+        }
+        button {
+            border: 3px solid white;
+            outline: none;
+            font-size: 30px;
+            background: white;
+            color: black;
+            cursor: pointer;
+            border-radius: 1em;
+            text-align: center;
+        }
+        button:hover {
+            background: black;
+            color: white;
+        }
+        #shoot {
+            padding-left: 14px;
+            border-radius: 1em;
+            font-size: 35px;
+        }
+
+        #partition{
+            margin: 0 auto;
+            margin-top:100px;
+            padding: 0 auto;
+            height: 400px;
+            width: 400px;
+        }
+        #startGame,#howPlay,#reGame,#back{
+            margin-right: 30px;
+            width: 300px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="mainPage">
+            <h1 id="mainCaption"style="font-size:50px; margin-top:120px">STARTREK v0.2</h1>
+            <div id="partition">
+                <ul type="none">
+                    <li><button style="padding-left:10px "id="startGame" onclick="start()">GAME START</button></li>
+                </ul>
+                <br>
+                <ul type="none">
+                    <li><button style="padding-left:10px "id="howPlay" onclick="expaln()">HOW PLAY</button></li>
+                </ul>
+            </div>
+        </div>
+        <canvas id="gameCanvas" width="600" height="700"></canvas>
+        <div id="gameOver">
+            <h1 id="overCaption"style="font-size:50px; margin-top:120px">GAME OVER</h1>
+            <div id="partition">
+                <ul type="none">
+                    <li><button style="padding-left:10px "id="reGame" onclick="reStart()">RESTART</button></li>
+                </ul>
+            </div>
+        </div>
+        <div id="about">
+            <div id="partition">
+                <ul type="none">
+                    <li><button style="padding-left:10px "id="back" onclick="reStart()">BACK</button></li>
+                </ul>
+                <center id="manual">
+                    게임의 구성
+                    <br><br>
+                    1. Enemy (Blue, Red, Green, Black) <br>
+                    Blue와 Red는 아군을 쫓아다닌다. <br>
+                    Green과 Black은 레이저를 발사하며 <br>
+                    Black은 쫓아다니며 레이저를 발사한다.<br>
+                    점수 Black-4, Green-3, 나머지-2<br><br>
+
+                    2. ship<br>
+                    공격버튼 - SpaceBar or 화면 Shoot<br>
+                    조작버튼 - 상하좌우 or 화면 Arrow<br>
+                    10combo - FeverTime<br><br>
+
+                    3. Asteroid - 장애물(운석)<br>
+                    허공에 또달아다님. 점수 10점<br><br>
+
+                    4. Item (데미지업, 실드)<br>
+                    데미지 2배와 방어 기능이다. <br>
+                    방어를 습득해도 보스한테 닿으면 사망<br><br>
+
+                    5. Boss<br>
+                    2000점 단위로 보스 발생! 난사기능 !<br>
+                    아이템 아껴두자. 닿으면 바로 즉사!<br><br>
+
+                    6. 그 외<br>
+                    ESC - 일시정지<br>
+                </center>
+            </div>
+        </div>
+        <div id="btnArea" style="height: 150px; top:700px;"> 
+            <ul type="none" id="scorePad">
+                <li> HIGH SCORE </li>
+                <li id="highScore"> 0 </li>
+                <li> SCORE </li>
+                <li id="score"> 0 </li>
+            </ul>
+            <ul type="none" id="attackPad">
+                <br>
+                <li> <button id="shoot" >SHOOT</button> </li>
+                <br>
+            </ul>
+            <ul type="none" id="controllPad">
+                <li><button id="up">▲</button></li>
+                <li>
+                    <button id="left">◀</button>
+                    &nbsp; &nbsp; &nbsp; 
+                    <button id="right">▶</button>
+                </li>
+                <li><button id="down">▼</button></li>
+            </ul>
+
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+    <script src="js/allImage.js"></script>
+    <script src="js/hit.js"></script>
+    <script src="js/spawn.js"></script>
+    <script src="js/space.js"></script>
+    <script src="js/ship.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/laser.js"></script>
+    <script src="js/asteroid.js"></script>
+    <script src="js/boss.js"></script>
+    <script src="js/healthBar.js"></script>
+    <script src="js/Item.js"></script>
+    <script>
+        var ready = false;
+        //웹 문서 시작시 게임시작화면 div만 출력
+        document.addEventListener("DOMContentLoaded", function(){ 
+            document.getElementById("mainPage").style.display = "block";
+            document.getElementById("mainCaption").style.display = "block";
+            document.getElementById("startGame").style.display = "block";
+            document.getElementById("howPlay").style.display = "block";
+
+            document.getElementById("gameCanvas").style.display = "none";
+
+            document.getElementById("gameOver").style.display = "none";
+            document.getElementById("overCaption").style.display = "none";
+            document.getElementById("reGame").style.display = "none";
+
+            document.getElementById("about").style.display = "none";
+            document.getElementById("back").style.display = "none";
+
+        });
+        //게임설명 div 출력
+        function expaln(){
+            document.getElementById("mainPage").style.display = "none";
+            document.getElementById("mainCaption").style.display = "none";
+            document.getElementById("startGame").style.display = "none";
+            document.getElementById("howPlay").style.display = "none";
+
+            document.getElementById("gameCanvas").style.display = "none";
+
+            document.getElementById("gameOver").style.display = "none";
+            document.getElementById("overCaption").style.display = "none";
+            document.getElementById("reGame").style.display = "none";
+
+            document.getElementById("about").style.display = "block";
+            document.getElementById("back").style.display = "block";
+        }
+        //게임시작화면출력
+        function reStart(){
+            document.getElementById("mainPage").style.display = "block";
+            document.getElementById("mainCaption").style.display = "block";
+            document.getElementById("startGame").style.display = "block";
+            document.getElementById("howPlay").style.display = "block";
+
+            document.getElementById("gameCanvas").style.display = "none";
+
+            document.getElementById("gameOver").style.display = "none";
+            document.getElementById("overCaption").style.display = "none";
+            document.getElementById("reGame").style.display = "none";
+
+            document.getElementById("about").style.display = "none";
+            document.getElementById("back").style.display = "none";
+        }
+        //게임시작 canvas 출력 후 그리기
+        function start(){
+            document.getElementById("mainPage").style.display = "none";
+            document.getElementById("mainCaption").style.display = "none";
+            document.getElementById("startGame").style.display = "none";
+            document.getElementById("howPlay").style.display = "none";
+
+            document.getElementById("gameCanvas").style.display = "block";
+
+            document.getElementById("gameOver").style.display = "none";
+            document.getElementById("overCaption").style.display = "none";
+            document.getElementById("reGame").style.display = "none";
+
+            document.getElementById("about").style.display = "none";
+            document.getElementById("back").style.display = "none";
+            if(ready===false) {
+                game.init();
+                draw();
+                ready=true;
+            }
+            else if(ready===true){ 
+                game.init();
+            }
+        }
+        //gameOver div 출력
+        function gameOver(){
+            document.getElementById("mainPage").style.display = "none";
+            document.getElementById("mainCaption").style.display = "none";
+            document.getElementById("startGame").style.display = "none";
+            document.getElementById("howPlay").style.display = "none";
+
+            document.getElementById("gameCanvas").style.display = "none";
+            
+            document.getElementById("gameOver").style.display = "block";
+            document.getElementById("overCaption").style.display = "block";
+            document.getElementById("reGame").style.display = "block";
+
+            document.getElementById("about").style.display = "none";
+            document.getElementById("back").style.display = "none";
+        }
+        //키입력 변수
+        var rightPressed = false;
+        var leftPressed = false; 
+        var upPressed = false;
+        var downPressed = false;
+        var attackPressed = false;
+        var set = false;
+        document.addEventListener('keydown', keyDownHandler, false);
+        document.addEventListener('keyup', keyUpHandler, false);
+
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
+
+        var game = new Game(canvas, ctx);
+
+        //게임 딜레이 생성
+        var frame = 0;
+        var fps = 1000/60; 
+        var delay = 0;
+        var now = 0;
+        var loadTime = new Date().getTime();
+
+        //키를 눌렀을 때 함수 
+        function keyDownHandler(e) {
+            if (e.code == 'ArrowRight') {
+                rightPressed = true;
+                document.getElementById("right").style.background = "black"; 
+                document.getElementById("right").style.color = "white"; 
+            }
+            if (e.code == 'ArrowLeft') {
+                leftPressed = true;
+                document.getElementById("left").style.background = "black"; 
+                document.getElementById("left").style.color = "white"; 
+            }
+            if (e.code == 'ArrowUp') {
+                upPressed = true;
+                document.getElementById("up").style.background = "black"; 
+                document.getElementById("up").style.color = "white"; 
+            }
+            if (e.code == 'ArrowDown') {
+                downPressed = true;
+                document.getElementById("down").style.background = "black"; 
+                document.getElementById("down").style.color = "white"; 
+            }
+            if (e.code == 'Space') {
+                attackPressed = true;
+                document.getElementById("shoot").style.background = "black"; 
+                document.getElementById("shoot").style.color = "white"; 
+            }
+            if (e.code == 'Escape') {
+                set = set ? false : true;
+            }
+        }
+        //키를 누르지 않았을 때 함수
+        function keyUpHandler(e) {
+            if (e.code == 'ArrowRight') {
+                rightPressed = false;
+                document.getElementById("right").style.background = "white"; 
+                document.getElementById("right").style.color = "black"; 
+            }
+            if (e.code == 'ArrowLeft') {
+                leftPressed = false;
+                document.getElementById("left").style.background = "white"; 
+                document.getElementById("left").style.color = "black"; 
+            }
+            if (e.code == 'ArrowUp') {
+                upPressed = false;
+                document.getElementById("up").style.background = "white"; 
+                document.getElementById("up").style.color = "black"; 
+            }
+            if (e.code == 'ArrowDown') {
+                downPressed = false;
+                document.getElementById("down").style.background = "white"; 
+                document.getElementById("down").style.color = "black"; 
+            }
+            if (e.code == 'Space') {
+                attackPressed = false;
+                document.getElementById("shoot").style.background = "white"; 
+                document.getElementById("shoot").style.color = "black"; 
+            }
+        }
+        //메인함수 내용물을 그리고 반복하는 함수
+        function draw(){
+            if (rightPressed && game.ship.x < canvas.width-game.ship.w ) {
+                game.ship.x += 5;
+            } 
+            if (leftPressed && game.ship.x > 0) {
+                game.ship.x -= 5;
+            }
+            if (upPressed && game.ship.y > 0) {
+                game.ship.y -= 5;
+            }
+            if (downPressed && game.ship.y < canvas.height-game.ship.h ) {
+                game.ship.y += 5;
+            }
+            //ms타임 get
+            now = new Date().getTime();
+            //딜레이
+            delay = now - loadTime;
+
+            //draw시작~callback 까지 걸린시간이 fps보다 클 때
+            //fps == 1000/60 즉, ms단위에서 1초는 1000, 1초에서 60번 반복하는 requset
+            //1초에 1번 반복하는 시간 == fps, 1초에 1번 실행될 수 있게 콜백해줌
+            if (delay > fps) {
+                
+                if (game.ship.hp <= 0) {
+                    var highScore = document.getElementById("highScore").innerText;
+                    if(highScore<game.ship.score){ //score가 highScore면 업데이트
+                        document.getElementById("highScore").innerText = game.ship.score;
+                    }
+                    gameOver();
+                    cancelAnimationFrame(frame);
+                    game.init();
+                }
+                //set Key를 누르지 않은 상태면 게임시작
+                if(!set){
+                    game.play(delay);
+                    game.hit.play(delay);
+                    game.spawn.play(delay);
+                    game.space.play();
+                    game.ship.play(delay, attackPressed);
+                }
+                //set키를 눌렀을 때에는 게임이 중지되고 paused 출력
+                else{
+                    ctx.font = "50px kenvector_future_thin";
+                    ctx.fillStyle = "#f2f2f2";
+                    ctx.fillText("Paused",200,350);
+                }
+                //함수가 끝나는 시간, 즉 새로운 함수의 시작체크
+                loadTime = now - (delay % fps);
+            }
+            //바뀐 내용을 바로바로 수정
+            frame = requestAnimationFrame(draw.bind(game));
+        }
+    </script>
+</body>
+
+</html>
